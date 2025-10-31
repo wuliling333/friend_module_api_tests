@@ -1,0 +1,65 @@
+base_url: "http://your-api-server.com"
+headers:
+  Content-Type: "application/json"
+  Authorization: "Bearer your-token"
+
+endpoints:
+  fetch_friend_list:
+    route: "/api/Friend/FetchFriendList"
+    method: "GET"
+
+  add_friend:
+    route: "/api/Friend/AddFriend"
+    method: "POST"
+    payloads:
+      - friendId: "12345"  # 正常场景
+      - {}                # 异常场景：缺少 friendId
+      - friendId: 12345   # 异常场景：friendId 类型错误
+
+  delete_friend:
+    route: "/api/Friend/DeleteFriend"
+    method: "POST"
+    payloads:
+      - friendId: "12345"          # 正常场景
+      - friendId: "nonexistent_id" # 异常场景：friendId 不存在
+      - {}                         # 异常场景：friendId 缺失
+
+  fetch_friend_request_list:
+    route: "/api/Friend/FetchFriendRequestList"
+    method: "GET"
+
+  accept_friend_request:
+    route: "/api/Friend/AcceptFriendRequest"
+    method: "POST"
+    payloads:
+      - requestId: "67890"               # 正常场景
+      - {}                               # 异常场景：requestId 缺失
+      - requestId: "nonexistent_request" # 异常场景：requestId 不存在
+
+  reject_friend_request:
+    route: "/api/Friend/RejectFriendRequest"
+    method: "POST"
+    payloads:
+      - requestId: "67890"               # 正常场景
+      - {}                               # 异常场景：requestId 缺失
+      - requestId: "nonexistent_request" # 异常场景：requestId 不存在
+
+  invite_friend_for_game:
+    route: "/api/Friend/InviteFriendForGame"
+    method: "POST"
+    payloads:
+      - friendId: "12345"
+        gameId: "game123"                # 正常场景
+      - gameId: "game123"                # 异常场景：缺少 friendId
+      - friendId: "12345"                # 异常场景：缺少 gameId
+
+  response_friend_invitation_for_game:
+    route: "/api/Friend/ResponseFriendInvitationForGame"
+    method: "POST"
+    payloads:
+      - invitationId: "invite123"
+        accept: true                     # 正常场景
+      - accept: true                     # 异常场景：缺少 invitationId
+      - invitationId: "invite123"        # 异常场景：缺少 accept
+      - invitationId: "invite123"
+        accept: "yes"                    # 异常场景：accept 值非法
