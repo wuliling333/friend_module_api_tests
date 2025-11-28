@@ -1,0 +1,179 @@
+# Quest API 测试配置文件
+# 包含所有正常和异常情况的测试用例
+
+base_url: "http://47.245.101.4:25001/api/Quest"
+
+test_cases:
+  # 正常情况测试用例 - 验证API在正确参数下的行为
+  normal_cases:
+    FetchQuestList:
+      endpoint: "FetchQuestList"
+      uid: "10000475"
+      data:
+        ActivityIdList: [1, 2, 101]
+      expected_status: 200
+      description: "正常获取任务列表"
+
+    SkipMainQuest:
+      endpoint: "SkipMainQuest"
+      uid: "10000001"
+      data:
+        QuestId: 30001
+      expected_status: 200
+      description: "正常跳过主任务"
+
+    ClaimQuestRewards:
+      endpoint: "ClaimQuestRewards"
+      uid: "10000635"
+      data:
+        ActivityId: 3
+      expected_status: 200
+      description: "正常领取任务奖励"
+
+    ReportQuestProgress:
+      endpoint: "ReportQuestProgress"
+      uid: "10002420"
+      data:
+        QuestType: 17
+        Params: []
+        Progress: 196
+      expected_status: 200
+      description: "正常报告任务进度"
+
+    FetchQuestActivityData:
+      endpoint: "FetchQuestActivityData"
+      uid: "10000020"
+      data:
+        GetAll: true
+      expected_status: 200
+      description: "正常获取任务活动数据"
+
+  # 异常情况测试用例 - 验证API在错误参数下的错误处理
+  abnormal_cases:
+    # 缺少参数测试
+    FetchQuestList_MissingUID:
+      endpoint: "FetchQuestList"
+      uid: null
+      data:
+        ActivityIdList: [1, 2, 101]
+      expected_status: 400
+      description: "缺少UID参数"
+
+    FetchQuestList_MissingData:
+      endpoint: "FetchQuestList"
+      uid: "10000475"
+      data: null
+      expected_status: 400
+      description: "缺少data参数"
+
+    # JSON格式错误测试
+    FetchQuestList_InvalidJSON:
+      endpoint: "FetchQuestList"
+      uid: "10000475"
+      data: '{"ActivityIdList: [1,2,101]'
+      expected_status: 400
+      description: "JSON格式错误-缺少闭合引号"
+
+    FetchQuestList_InvalidJSON2:
+      endpoint: "FetchQuestList"
+      uid: "10000475"
+      data: "{Invalid JSON}"
+      expected_status: 400
+      description: "完全无效的JSON格式"
+
+    # 无效参数值测试
+    SkipMainQuest_InvalidQuestId:
+      endpoint: "SkipMainQuest"
+      uid: "10000001"
+      data:
+        QuestId: -1
+      expected_status: 400
+      description: "无效的任务ID"
+
+    SkipMainQuest_StringQuestId:
+      endpoint: "SkipMainQuest"
+      uid: "10000001"
+      data:
+        QuestId: "invalid_string"
+      expected_status: 400
+      description: "字符串类型的任务ID"
+
+    ClaimQuestRewards_InvalidActivityId:
+      endpoint: "ClaimQuestRewards"
+      uid: "10000635"
+      data:
+        ActivityId: -999
+      expected_status: 400
+      description: "无效的活动ID"
+
+    # 空参数测试
+    FetchQuestList_EmptyActivityList:
+      endpoint: "FetchQuestList"
+      uid: "10000475"
+      data:
+        ActivityIdList: []
+      expected_status: 200
+      description: "空活动列表"
+
+    ReportQuestProgress_MissingParams:
+      endpoint: "ReportQuestProgress"
+      uid: "10002420"
+      data:
+        QuestType: 17
+      expected_status: 400
+      description: "缺少必要参数"
+
+    ReportQuestProgress_InvalidProgress:
+      endpoint: "ReportQuestProgress"
+      uid: "10002420"
+      data:
+        QuestType: 17
+        Params: []
+        Progress: -10
+      expected_status: 400
+      description: "无效的进度值"
+
+    # 无效UID格式测试
+    FetchQuestList_InvalidUID:
+      endpoint: "FetchQuestList"
+      uid: "invalid_uid_string"
+      data:
+        ActivityIdList: [1, 2, 101]
+      expected_status: 400
+      description: "无效的UID格式"
+
+    FetchQuestList_EmptyUID:
+      endpoint: "FetchQuestList"
+      uid: ""
+      data:
+        ActivityIdList: [1, 2, 101]
+      expected_status: 400
+      description: "空UID"
+
+    # 数据类型错误测试
+    FetchQuestActivityData_StringGetAll:
+      endpoint: "FetchQuestActivityData"
+      uid: "10000020"
+      data:
+        GetAll: "true"
+      expected_status: 400
+      description: "字符串类型的GetAll参数"
+
+    # 边界值测试
+    FetchQuestList_VeryLongUID:
+      endpoint: "FetchQuestList"
+      uid: "1234567890123456789012345678901234567890"
+      data:
+        ActivityIdList: [1, 2, 101]
+      expected_status: 400
+      description: "超长UID测试"
+
+    ReportQuestProgress_VeryLargeProgress:
+      endpoint: "ReportQuestProgress"
+      uid: "10002420"
+      data:
+        QuestType: 17
+        Params: []
+        Progress: 999999999
+      expected_status: 400
+      description: "超大数据进度值"
